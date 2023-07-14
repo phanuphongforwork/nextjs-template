@@ -8,7 +8,7 @@ type IProps = {
 };
 
 export const Layout = ({ children, metaTag }: IProps) => {
-  const containerWidth = useBreakpointValue({ base: "100%", lg: "45%" });
+  const containerWidth = useBreakpointValue({ base: "100%" });
   return (
     <>
       <Meta {...metaTag} />

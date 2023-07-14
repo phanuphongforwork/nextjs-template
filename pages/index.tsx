@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layouts/layout.component";
+import { FullLayout } from "@/components/layouts/full-layout.component";
 import { customApi } from "@/services/testService";
 import { useErrorHandler } from "@/hooks/useErrorHandler.hook";
 import { useState } from "react";
@@ -17,12 +18,13 @@ export default function Home() {
     // showSuccessFetchingMessage: {
     //   show: true,
     //   message: "wave",
+    //   description: "53w5x",
     // },
   });
 
   return (
     <>
-      <Layout metaTag={metaTag}>
+      <FullLayout metaTag={metaTag}>
         <div
           onClick={() => {
             reload();
@@ -30,7 +32,7 @@ export default function Home() {
         >
           Home
         </div>
-      </Layout>
+      </FullLayout>
     </>
   );
 }

@@ -9,6 +9,7 @@ export const useErrorHandler = <T>(
     showSuccessFetchingMessage?: {
       show?: boolean;
       message?: string;
+      description?: string;
     };
     showErrorToast?: boolean;
   }
@@ -26,7 +27,8 @@ export const useErrorHandler = <T>(
 
       if (options?.showSuccessFetchingMessage?.show) {
         toast.showSuccessToast(
-          options?.showSuccessFetchingMessage?.message || ""
+          options?.showSuccessFetchingMessage?.message || "",
+          options?.showSuccessFetchingMessage?.description || ""
         );
       }
     } catch (error: any) {
