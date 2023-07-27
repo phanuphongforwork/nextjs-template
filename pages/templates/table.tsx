@@ -48,7 +48,9 @@ export default function TablePage() {
   useEffect(() => {
     setIncludes(["wave", "Phanupjong"]);
 
-    for (let i = 0; i < 11; i++) {
+    setData([]);
+
+    for (let i = 0; i < 30; i++) {
       setData((prev) => {
         return [
           ...prev,
