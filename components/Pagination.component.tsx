@@ -10,9 +10,6 @@ interface PaginationProps {
   setCurrentPage?: (pageNumber: number) => void;
 }
 
-type PaginationArrayItem = number | -1;
-type PaginationArray = PaginationArrayItem[];
-
 export const Pagination = ({
   totalCount,
   pageSize,
@@ -49,11 +46,15 @@ export const Pagination = ({
             aria-label="Pagination"
           >
             <Box
-              className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
+              className={`${
+                currentPage - 1 > 0 ? "cursor-pointer" : "cursor-not-allowed"
+              } relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                 currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={() => {
-                handlePageChange(currentPage - 1);
+                if (currentPage - 1 > 0) {
+                  handlePageChange(currentPage - 1);
+                }
               }}
             >
               <span className="sr-only">Previous</span>
@@ -62,7 +63,7 @@ export const Pagination = ({
             {paginationArray.map((page: number, index: number) => (
               <Box
                 key={index}
-                aria-current={currentPage === page ? "page" : undefined}
+                // aria-current={currentPage === page ? "page" : undefined}
                 className={`relative z-10 inline-flex items-center ${
                   currentPage === page ? "bg-indigo-600" : "bg-white"
                 } px-4 py-2 text-sm font-semibold text-${
@@ -82,13 +83,19 @@ export const Pagination = ({
               </Box>
             ))}
             <Box
-              className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
+              className={`${
+                currentPage + 1 <= paginationArray.length
+                  ? "cursor-pointer"
+                  : "cursor-not-allowed"
+              } relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                 currentPage === paginationArray[paginationArray.length - 1]
                   ? "opacity-50 cursor-not-allowed"
                   : ""
               }`}
               onClick={() => {
-                handlePageChange(currentPage + 1);
+                if (currentPage + 1 <= paginationArray.length) {
+                  handlePageChange(currentPage + 1);
+                }
               }}
             >
               <span className="sr-only">Next</span>

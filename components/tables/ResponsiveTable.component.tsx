@@ -10,11 +10,6 @@ import {
   Button,
   Icon,
   Select,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  StatArrow,
   useBreakpointValue,
   Alert,
   AlertIcon,
@@ -29,7 +24,8 @@ import { SearchBar } from "../searchs/Search.component";
 import { HeaderAndSubTitle } from "../displays/texts/HeaderAndSubTitle.component";
 import { FilterConstant, FilterType } from "@/constants/filter.constant";
 import { DatetimePicker } from "../date-time-pickers/DatetimePicker.component";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { IconType } from "react-icons";
 
 type Header = {
   key: string;
@@ -61,11 +57,36 @@ export type FilterItemType = {
 }[];
 
 export type IResponsiveTableType = {
+  variant?: string;
+  colorSchema?: string;
+  size?: string;
   headers: Header[];
   data: any[];
   isShowIndex?: boolean;
   customIndexTitle?: string;
   filterItems?: FilterItemType;
+  title?: string;
+  subtitle?: string;
+  onSearch?: Function;
+  createSection?: {
+    show: boolean;
+    title?: string;
+    icon?: IconType;
+    onCreateClick?: Function;
+    colorSchema?: string;
+  };
+  underFilterSection?: React.ReactNode;
+  noDataSecton?: {
+    title?: string;
+    subtitle?: string;
+  };
+  pagination?: {
+    total?: number;
+    perPage?: number;
+    siblingCount?: number;
+    currentPage?: number;
+    onChange?: Function;
+  };
 };
 
 const onSelectionChange = (
@@ -78,15 +99,39 @@ const onSelectionChange = (
 };
 
 export const ResponsiveTable = ({
+  variant = "striped",
+  colorSchema = "gray",
+  size = "lg",
   headers,
   data,
   isShowIndex = false,
   customIndexTitle = "#",
   filterItems = [],
+  title = "",
+  subtitle = "",
+  createSection = {
+    show: true,
+    title: "Create",
+    icon: MdAddCircleOutline,
+    colorSchema: "teal",
+    onCreateClick: () => {},
+  },
+  pagination,
+  underFilterSection,
+  noDataSecton,
+  onSearch,
 }: IResponsiveTableType) => {
   const isVerticalTable = useBreakpointValue({ base: true, lg: false });
-  const [page, setPage] = useState<number>(1);
 
+  const [page, setPage] = useState<number>(1);
+  const [total, setTotal] = useState<number>(0);
+  const [perPage, setPerPage] = useState<number>(10);
+
+  useEffect(() => {
+    setTotal(pagination?.total || 0);
+    setPage(pagination?.currentPage || 1);
+    setPerPage(pagination?.perPage || 10);
+  }, [pagination!.total]);
   return (
     <Box w={"full"}>
       <Box
@@ -96,26 +141,38 @@ export const ResponsiveTable = ({
         <Box className="flex flex-col w-full">
           <Box className=" flex flex-col md:flex-row md:justify-between justify-start">
             <Box maxW={"500px"}>
-              <HeaderAndSubTitle
-                title="Table Header"
-                subtitle="    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro vitae esse cum necessitatibus quas, suscipit aliquam libero, non laudantium nostrum sit illo? Ex temporibus magni nihil nulla distinctio maiores minima!"
-              />
+              {title && <HeaderAndSubTitle title={title} subtitle={subtitle} />}
             </Box>
 
             <Box className="w-full md:w-auto" mt={{ base: 4, md: 0 }}>
-              <Button
-                className="w-full"
-                colorScheme="teal"
-                leftIcon={<Icon as={MdAddCircleOutline} />}
-              >
-                Create
-              </Button>
+              {createSection?.show && (
+                <Button
+                  className="w-full"
+                  colorScheme={createSection?.colorSchema ?? "teal"}
+                  leftIcon={
+                    <Icon as={createSection?.icon ?? MdAddCircleOutline} />
+                  }
+                  onClick={() => {
+                    if (createSection?.onCreateClick) {
+                      createSection?.onCreateClick();
+                    }
+                  }}
+                >
+                  {createSection?.title}
+                </Button>
+              )}
             </Box>
           </Box>
 
-          <Box w={"full"} bg={"white"} rounded={"lg"} mt={{ base: 8, md: 4 }}>
+          <Box w={"full"} bg={"white"} rounded={"lg"} mt={{ base: 8, md: 8 }}>
             <Box>
-              <SearchBar />
+              <SearchBar
+                onSearch={(search: string) => {
+                  if (onSearch) {
+                    onSearch(search);
+                  }
+                }}
+              />
             </Box>
             {filterItems && filterItems?.length > 0 && (
               <>
@@ -205,57 +262,31 @@ export const ResponsiveTable = ({
             )}
           </Box>
 
-          <Box className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5  gap-8 mt-8">
-            <Stat>
-              <StatLabel>Sent</StatLabel>
-              <StatNumber>345,670</StatNumber>
-              <StatHelpText>
-                <StatArrow type="increase" />
-                23.36%
-              </StatHelpText>
-            </Stat>
-
-            <Stat>
-              <StatLabel>Sent</StatLabel>
-              <StatNumber>345,670</StatNumber>
-              <StatHelpText>
-                <StatArrow type="increase" />
-                23.36%
-              </StatHelpText>
-            </Stat>
-            <Stat>
-              <StatLabel>Sent</StatLabel>
-              <StatNumber>345,670</StatNumber>
-              <StatHelpText>
-                <StatArrow type="increase" />
-                23.36%
-              </StatHelpText>
-            </Stat>
-            <Stat>
-              <StatLabel>Sent</StatLabel>
-              <StatNumber>345,670</StatNumber>
-              <StatHelpText>
-                <StatArrow type="increase" />
-                23.36%
-              </StatHelpText>
-            </Stat>
-            <Stat>
-              <StatLabel>Sent</StatLabel>
-              <StatNumber>345,670</StatNumber>
-              <StatHelpText>
-                <StatArrow type="increase" />
-                23.36%
-              </StatHelpText>
-            </Stat>
-          </Box>
+          <Box className="w-full">{underFilterSection}</Box>
         </Box>
       </Box>
       <Box w="full">
         {isVerticalTable &&
-          verticalTable({ data, headers, isShowIndex, customIndexTitle })}
+          verticalTable({
+            data,
+            headers,
+            isShowIndex,
+            customIndexTitle,
+            variant,
+            colorSchema,
+            size,
+          })}
       </Box>
       {!isVerticalTable &&
-        normalTable({ data, headers, isShowIndex, customIndexTitle })}
+        normalTable({
+          data,
+          headers,
+          isShowIndex,
+          customIndexTitle,
+          variant,
+          colorSchema,
+          size,
+        })}
       {!data?.length && (
         <Box w={"full"} pb={8}>
           <Alert
@@ -270,20 +301,24 @@ export const ResponsiveTable = ({
           >
             <AlertIcon boxSize="40px" mr={0} />
             <AlertTitle mt={4} mb={1} fontSize="lg">
-              No data Rows...
+              {noDataSecton?.title ?? "No data Rows..."}
             </AlertTitle>
             <AlertDescription maxWidth="sm">
-              Now, you can add your own data rows.
+              {noDataSecton?.subtitle ?? "Now, you can add your own data rows."}
             </AlertDescription>
           </Alert>
         </Box>
       )}
       <Pagination
-        totalCount={125}
-        pageSize={10}
+        totalCount={total}
+        pageSize={perPage}
         currentPage={page}
         setCurrentPage={(page: number) => {
           setPage(page);
+
+          if (pagination?.onChange) {
+            pagination?.onChange(page);
+          }
         }}
       />
     </Box>
@@ -295,15 +330,21 @@ const verticalTable = ({
   headers = [],
   isShowIndex,
   customIndexTitle,
+  variant,
+  colorSchema,
+  size,
 }: {
   data: any[];
   headers: Header[];
   isShowIndex: boolean;
   customIndexTitle: string;
+  variant: string;
+  colorSchema: string;
+  size: string;
 }) => {
   return (
     <TableContainer bg={"white"} px={2}>
-      <Table variant="striped" colorScheme="gray" size={"md"}>
+      <Table variant={variant} colorScheme={colorSchema} size={size}>
         <Tbody className="grid grid-cols-1 gap-8">
           {data?.map((row: any, index: number) => {
             return (
@@ -339,15 +380,21 @@ const normalTable = ({
   headers = [],
   isShowIndex,
   customIndexTitle,
+  variant,
+  colorSchema,
+  size,
 }: {
   data: any[];
   headers: Header[];
   isShowIndex: boolean;
   customIndexTitle: string;
+  variant: string;
+  colorSchema: string;
+  size: string;
 }) => {
   return (
     <TableContainer bg={"white"} px={2}>
-      <Table variant="striped" colorScheme="gray" size={"lg"}>
+      <Table variant={variant} colorScheme={colorSchema} size={size}>
         <Thead>
           <Tr>
             {isShowIndex && <Th className="font-bold">{customIndexTitle}</Th>}

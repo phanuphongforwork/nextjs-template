@@ -3,12 +3,15 @@ import { CustomTable } from "@/components/tables/Table.component";
 import { BreadcrumbType } from "@/components/CustomBreadcrumb.component";
 import { FilterItemType } from "@/components/tables/Table.component";
 import { Badge } from "@chakra-ui/react";
+import { TestState } from "@/components/dashboards/TestState";
 
 import { FilterType } from "@/constants/filter.constant";
 import { useEffect, useState } from "react";
 
 import { useParams } from "@/hooks/useParam.hook";
 import { ResponsiveTable } from "@/components/tables/ResponsiveTable.component";
+import { DataAction } from "@/components/DataAction.component";
+import { MdSupervisedUserCircle } from "react-icons/md";
 
 export default function TablePage() {
   const metaTag = {
@@ -24,8 +27,14 @@ export default function TablePage() {
     { name: "Templates Table", href: "/templates/table", current: true },
   ];
 
-  const { setQ, setIncludes, setFilters, setDefaultFilters, ...param } =
-    useParams();
+  const {
+    setQ,
+    setIncludes,
+    setFilters,
+    setDefaultFilters,
+    setPage,
+    ...param
+  } = useParams();
 
   const defaultFilters: Record<string, any> = {
     select_option_1: "option1",
@@ -34,9 +43,26 @@ export default function TablePage() {
     check_box: true,
   };
 
+  const [data, setData] = useState<any[]>([]);
+
   useEffect(() => {
     setIncludes(["wave", "Phanupjong"]);
+
+    for (let i = 0; i < 11; i++) {
+      setData((prev) => {
+        return [
+          ...prev,
+          {
+            id: "wave" + i,
+            name: "wave" + i,
+            phone: "0123456789",
+          },
+        ];
+      });
+    }
+
     setDefaultFilters(defaultFilters);
+    setPage(5);
   }, []);
 
   const filterItems: FilterItemType = [
@@ -105,35 +131,81 @@ export default function TablePage() {
     <>
       <FullLayout metaTag={metaTag} breadcrumbs={breadcrumbs} header={header}>
         <div className="w-full">
-          {/* <CustomTable
-            filterItems={filterItems}
-            onSearch={(value: string) => {
-              setQ(value);
-            }}
-          /> */}
-
           <ResponsiveTable
+            title="Responsive Table"
+            subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit."
             filterItems={filterItems}
             isShowIndex={false}
             customIndexTitle={"Number"}
-            data={[
-              {
-                id: "wave1",
-                name: "wave",
-                phone: "0123456789",
+            underFilterSection={<TestState />}
+            createSection={{
+              show: true,
+              title: "Custom Create",
+              colorSchema: "teal",
+              onCreateClick: () => {
+                alert("create");
               },
-              {
-                id: "wave2",
-                name: "aa",
-                phone: "0123456789",
-              },
-              {
-                id: "wave3",
-                name: "aa",
-                phone: "0123456789",
-              },
-            ]}
+            }}
+            data={data}
             headers={[
+              {
+                title: "Actions",
+                key: "actions",
+                render: () => {
+                  return (
+                    <DataAction
+                      isShowDeleteSection={true}
+                      isShowEditSection={true}
+                      isShowViewSection={true}
+                      customActions={[
+                        {
+                          groupTitle: "Custom",
+                          groupMenu: [
+                            {
+                              isShow: true,
+                              name: "Test",
+                              icon: MdSupervisedUserCircle,
+                              onClick: () => {},
+                            },
+                            {
+                              isShow: true,
+                              name: "Test",
+                              icon: MdSupervisedUserCircle,
+                              onClick: () => {},
+                            },
+                          ],
+                        },
+                      ]}
+                      // customViewLists={[
+                      //   {
+                      //     isShow: true,
+                      //     name: "wave",
+                      //     icon: MdSupervisedUserCircle,
+                      //   },
+                      // ]}
+                      // customDeleteLists={[
+                      //   {
+                      //     isShow: true,
+                      //     name: "wave",
+                      //     icon: MdSupervisedUserCircle,
+                      //   },
+                      // ]}
+                      // customEditLists={[
+                      //   {
+                      //     isShow: true,
+                      //     name: "wave",
+                      //     icon: MdSupervisedUserCircle,
+                      //   },
+                      //   {
+                      //     isShow: true,
+                      //     name: "wave",
+                      //     icon: MdSupervisedUserCircle,
+                      //   },
+                      // ]}
+                    />
+                  );
+                },
+              },
               {
                 title: "ID",
                 key: "id",
@@ -150,14 +222,14 @@ export default function TablePage() {
                 title: "Phone",
                 key: "phone",
               },
-              {
-                title: "Actions",
-                key: "actions",
-                render: () => {
-                  return <Badge colorScheme="purple">New</Badge>;
-                },
-              },
             ]}
+            pagination={{
+              total: data.length,
+              perPage: 10,
+              onChange: (page: number) => {
+                setPage(page);
+              },
+            }}
           />
         </div>
       </FullLayout>

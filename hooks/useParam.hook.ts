@@ -3,16 +3,12 @@ import _ from "lodash";
 
 type FilterObject = Record<string, any>;
 
-type SearchParams = {
-  q: string;
-  includes: string;
-  filters: FilterObject;
-};
-
 export const useParams = () => {
   const [q, setQ] = useState<string>("");
   const [includes, setIncludes] = useState<string>("");
   const [filters, setFilters] = useState<FilterObject>({});
+  const [page, setPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(10);
 
   const setQParam = (search: string) => {
     if (search !== undefined) {
@@ -72,13 +68,24 @@ export const useParams = () => {
     return data;
   };
 
+  console.log("test===>", {
+    q,
+    includes,
+    filters: filterDTO(filters),
+    page,
+    perPage,
+  });
   return {
     q,
     includes,
     filters: filterDTO(filters),
+    page,
+    perPage,
     setQ: setQParam,
     setIncludes: setIncludesParam,
     setFilters: setFiltersParam,
     setDefaultFilters,
+    setPage,
+    setPerPage,
   };
 };
