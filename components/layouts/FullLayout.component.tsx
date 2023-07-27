@@ -248,14 +248,9 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         icon={<FiMenu />}
       />
 
-      <Text
-        display={{ base: "flex", lg: "none" }}
-        fontSize="2xl"
-        fontFamily="monospace"
-        fontWeight="bold"
-      >
-        Logo
-      </Text>
+      <Box display={{ base: "flex", lg: "none" }}>
+        <Logo />
+      </Box>
 
       <HStack spacing={{ base: "0", lg: "6" }}>
         <IconButton

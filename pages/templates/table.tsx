@@ -2,11 +2,13 @@ import { FullLayout } from "@/components/layouts/FullLayout.component";
 import { CustomTable } from "@/components/tables/Table.component";
 import { BreadcrumbType } from "@/components/CustomBreadcrumb.component";
 import { FilterItemType } from "@/components/tables/Table.component";
+import { Badge } from "@chakra-ui/react";
 
 import { FilterType } from "@/constants/filter.constant";
 import { useEffect, useState } from "react";
 
 import { useParams } from "@/hooks/useParam.hook";
+import { ResponsiveTable } from "@/components/tables/ResponsiveTable.component";
 
 export default function TablePage() {
   const metaTag = {
@@ -103,11 +105,59 @@ export default function TablePage() {
     <>
       <FullLayout metaTag={metaTag} breadcrumbs={breadcrumbs} header={header}>
         <div className="w-full">
-          <CustomTable
+          {/* <CustomTable
             filterItems={filterItems}
             onSearch={(value: string) => {
               setQ(value);
             }}
+          /> */}
+
+          <ResponsiveTable
+            filterItems={filterItems}
+            isShowIndex={false}
+            customIndexTitle={"Number"}
+            data={[
+              {
+                id: "wave1",
+                name: "wave",
+                phone: "0123456789",
+              },
+              {
+                id: "wave2",
+                name: "aa",
+                phone: "0123456789",
+              },
+              {
+                id: "wave3",
+                name: "aa",
+                phone: "0123456789",
+              },
+            ]}
+            headers={[
+              {
+                title: "ID",
+                key: "id",
+              },
+              {
+                title: "Name",
+                key: "name",
+
+                render: (data: any) => {
+                  return <>{data.name + ";;;;"}</>;
+                },
+              },
+              {
+                title: "Phone",
+                key: "phone",
+              },
+              {
+                title: "Actions",
+                key: "actions",
+                render: () => {
+                  return <Badge colorScheme="purple">New</Badge>;
+                },
+              },
+            ]}
           />
         </div>
       </FullLayout>
