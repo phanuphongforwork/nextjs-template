@@ -29,6 +29,7 @@ import { SearchBar } from "../searchs/Search.component";
 import { HeaderAndSubTitle } from "../displays/texts/HeaderAndSubTitle.component";
 import { FilterConstant, FilterType } from "@/constants/filter.constant";
 import { DatetimePicker } from "../date-time-pickers/DatetimePicker.component";
+import { useState } from "react";
 
 type Header = {
   key: string;
@@ -69,10 +70,8 @@ export type IResponsiveTableType = {
 
 const onSelectionChange = (
   value: string | number | boolean,
-  defaultValue: string | number | boolean,
   onSelect?: Function
 ) => {
-  defaultValue = value;
   if (onSelect) {
     onSelect(value || "");
   }
@@ -86,6 +85,7 @@ export const ResponsiveTable = ({
   filterItems = [],
 }: IResponsiveTableType) => {
   const isVerticalTable = useBreakpointValue({ base: true, lg: false });
+  const [page, setPage] = useState<number>(1);
 
   return (
     <Box w={"full"}>
@@ -134,7 +134,6 @@ export const ResponsiveTable = ({
                             onChange={(event) => {
                               onSelectionChange(
                                 event.target.value,
-                                filter?.select?.selectValue || "",
                                 filter?.select?.onSelect as Function
                               );
                             }}
@@ -161,7 +160,15 @@ export const ResponsiveTable = ({
                           <Box mt={1}>
                             <DatetimePicker
                               date={filter?.date?.selectValue}
-                              onSelect={filter?.date?.onSelect}
+                              onSelect={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                              ) => {
+                                if (filter?.checkbox?.onSelect) {
+                                  filter?.checkbox?.onSelect(
+                                    event.target.checked
+                                  );
+                                }
+                              }}
                             />
                           </Box>
                         </Box>
@@ -271,7 +278,14 @@ export const ResponsiveTable = ({
           </Alert>
         </Box>
       )}
-      <Pagination />
+      <Pagination
+        totalCount={125}
+        pageSize={10}
+        currentPage={page}
+        setCurrentPage={(page: number) => {
+          setPage(page);
+        }}
+      />
     </Box>
   );
 };
