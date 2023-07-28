@@ -32,7 +32,7 @@ export const Pagination = ({
 
   return (
     <>
-      <Box className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-b-lg cursor-pointer">
+      <Box className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg cursor-pointer shadow-md">
         <Box className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <Box>
             <p className="text-sm text-gray-700">

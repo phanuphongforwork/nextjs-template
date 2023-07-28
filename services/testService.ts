@@ -13,6 +13,8 @@ class CustomApi extends ApiClient {
       params
     );
 
+    setTimeout(() => {}, 3000);
+
     return responseData;
   }
 }

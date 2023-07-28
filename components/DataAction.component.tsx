@@ -6,10 +6,16 @@ import {
   MenuItem,
   MenuDivider,
   Icon,
-  IconButton,
+  Button,
   Box,
 } from "@chakra-ui/react";
-import { MdList, MdVisibility, MdEdit, MdDelete } from "react-icons/md";
+import {
+  MdFormatListBulletedAdd,
+  MdVisibility,
+  MdEdit,
+  MdDelete,
+  MdOutlineKeyboardArrowDown,
+} from "react-icons/md";
 import { IconType } from "react-icons";
 import some from "lodash/some";
 
@@ -51,7 +57,7 @@ type IProps = {
 
 export const DataAction = ({
   colorScheme = "teal",
-  icon = MdList,
+  icon = MdFormatListBulletedAdd,
   isShowViewSection = true,
   isShowEditSection = true,
   isShowDeleteSection = true,
@@ -82,10 +88,13 @@ export const DataAction = ({
     <>
       <Menu size={"lg"}>
         <MenuButton
-          as={IconButton}
-          icon={<Icon as={icon} boxSize={5} />}
-          colorScheme={colorScheme}
-        />
+          w={{ base: "full", md: "auto" }}
+          as={Button}
+          colorScheme="teal"
+          rightIcon={<Icon as={MdOutlineKeyboardArrowDown} />}
+        >
+          จัดการ
+        </MenuButton>
         <MenuList>
           {isShowViewSection && (isShowView || isHaveActiveCustomViewLists) && (
             <MenuGroup title={viewTitle}>
@@ -274,10 +283,6 @@ export const DataAction = ({
                 })}
               </MenuGroup>
             )}
-
-          {/* {isShowEditSection && (isShowEdit || isHaveActiveCustomEditLists) && (
-            <MenuDivider />
-          )} */}
         </MenuList>
       </Menu>
     </>

@@ -262,7 +262,7 @@ export const CustomTable = ({
           </Tbody>
         </Table>
       </TableContainer>
-      <Pagination />
+      {/* <Pagination /> */}
     </>
   );
 };

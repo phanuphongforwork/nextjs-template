@@ -10,6 +10,16 @@ export const useParams = () => {
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
 
+  // useEffect(() => {
+  //   console.log("test===>", {
+  //     q,
+  //     includes,
+  //     filters: filterDTO(filters),
+  //     page,
+  //     perPage,
+  //   });
+  // }, [q, includes, filters, page, perPage]);
+
   const setQParam = (search: string) => {
     if (search !== undefined) {
       setQ(search);
@@ -68,13 +78,6 @@ export const useParams = () => {
     return data;
   };
 
-  console.log("test===>", {
-    q,
-    includes,
-    filters: filterDTO(filters),
-    page,
-    perPage,
-  });
   return {
     q,
     includes,

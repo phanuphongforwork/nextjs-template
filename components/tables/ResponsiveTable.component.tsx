@@ -26,11 +26,13 @@ import { FilterConstant, FilterType } from "@/constants/filter.constant";
 import { DatetimePicker } from "../date-time-pickers/DatetimePicker.component";
 import React, { useEffect, useState } from "react";
 import { IconType } from "react-icons";
+import { LoadingTableSkeleton } from "../skeletons/LoadingTableSkeleton.component";
 
 type Header = {
   key: string;
   title: string;
   render?: Function;
+  width?: string;
 };
 
 export type SelectOptionType = { value: string; label: string };
@@ -62,6 +64,7 @@ export type IResponsiveTableType = {
   size?: string;
   headers: Header[];
   data: any[];
+  isLoading?: boolean;
   isShowIndex?: boolean;
   customIndexTitle?: string;
   filterItems?: FilterItemType;
@@ -105,6 +108,7 @@ export const ResponsiveTable = ({
   headers,
   data,
   isShowIndex = false,
+  isLoading = false,
   customIndexTitle = "#",
   filterItems = [],
   title = "",
@@ -220,10 +224,8 @@ export const ResponsiveTable = ({
                               onSelect={(
                                 event: React.ChangeEvent<HTMLInputElement>
                               ) => {
-                                if (filter?.checkbox?.onSelect) {
-                                  filter?.checkbox?.onSelect(
-                                    event.target.checked
-                                  );
+                                if (filter?.date?.onSelect) {
+                                  filter?.date?.onSelect(event);
                                 }
                               }}
                             />
@@ -275,6 +277,7 @@ export const ResponsiveTable = ({
             variant,
             colorSchema,
             size,
+            isLoading,
           })}
       </Box>
       {!isVerticalTable &&
@@ -286,6 +289,7 @@ export const ResponsiveTable = ({
           variant,
           colorSchema,
           size,
+          isLoading,
         })}
       {!data?.length && (
         <Box w={"full"} pb={8}>
@@ -309,18 +313,20 @@ export const ResponsiveTable = ({
           </Alert>
         </Box>
       )}
-      <Pagination
-        totalCount={total}
-        pageSize={perPage}
-        currentPage={page}
-        setCurrentPage={(page: number) => {
-          setPage(page);
+      <Box mt={2}>
+        <Pagination
+          totalCount={total}
+          pageSize={perPage}
+          currentPage={page}
+          setCurrentPage={(page: number) => {
+            setPage(page);
 
-          if (pagination?.onChange) {
-            pagination?.onChange(page);
-          }
-        }}
-      />
+            if (pagination?.onChange) {
+              pagination?.onChange(page);
+            }
+          }}
+        />
+      </Box>
     </Box>
   );
 };
@@ -333,6 +339,7 @@ const verticalTable = ({
   variant,
   colorSchema,
   size,
+  isLoading,
 }: {
   data: any[];
   headers: Header[];
@@ -341,36 +348,48 @@ const verticalTable = ({
   variant: string;
   colorSchema: string;
   size: string;
+  isLoading?: boolean;
 }) => {
   return (
-    <TableContainer bg={"white"} px={2}>
+    <TableContainer
+      bg={"white"}
+      px={2}
+      className=" shadow-md rounded-lg"
+      py={2}
+    >
       <Table variant={variant} colorScheme={colorSchema} size={size}>
         <Tbody className="grid grid-cols-1 gap-8">
-          {data?.map((row: any, index: number) => {
-            return (
-              <Tr key={index}>
-                {isShowIndex && (
-                  <Td className="flex w-full">
-                    <Box className="w-1/3 font-bold">{customIndexTitle}</Box>
-                    <Box className="w-2/3 font-bold">{index + 1}</Box>
-                  </Td>
-                )}
-
-                {headers.map((header, index) => {
-                  return (
-                    <Td className="flex w-full" key={header.title + index}>
-                      <Box className="w-1/3 font-bold">{header.title}</Box>
-                      <Box className="w-2/3">
-                        {header?.render ? header.render(row) : row[header.key]}
-                      </Box>
+          {!isLoading &&
+            data?.map((row: any, index: number) => {
+              return (
+                <Tr key={index}>
+                  {isShowIndex && (
+                    <Td className="flex w-full">
+                      <Box className="w-1/3 font-bold">{customIndexTitle}</Box>
+                      <Box className="w-2/3 font-bold">{index + 1}</Box>
                     </Td>
-                  );
-                })}
-              </Tr>
-            );
-          })}
+                  )}
+
+                  {headers.map((header, index) => {
+                    return (
+                      <Td className="flex w-full" key={header.title + index}>
+                        <Box className="w-1/3 font-bold">{header.title}</Box>
+                        <Box className="w-2/3 flex flex-row items-center whitespace-normal">
+                          <Box className="line-clamp-3 w-full ">
+                            {header?.render
+                              ? header.render(row)
+                              : row[header.key]}
+                          </Box>
+                        </Box>
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
         </Tbody>
       </Table>
+      {isLoading && <LoadingTableSkeleton />}
     </TableContainer>
   );
 };
@@ -383,6 +402,7 @@ const normalTable = ({
   variant,
   colorSchema,
   size,
+  isLoading,
 }: {
   data: any[];
   headers: Header[];
@@ -391,17 +411,32 @@ const normalTable = ({
   variant: string;
   colorSchema: string;
   size: string;
+  isLoading?: boolean;
 }) => {
   return (
-    <TableContainer bg={"white"} px={2}>
-      <Table variant={variant} colorScheme={colorSchema} size={size}>
+    <TableContainer
+      bg={"white"}
+      px={2}
+      py={2}
+      className=" shadow-md rounded-lg"
+    >
+      <Table
+        variant={variant}
+        colorScheme={colorSchema}
+        size={size}
+        __css={{ tableLayout: "fixed", width: "full" }}
+      >
         <Thead>
           <Tr>
-            {isShowIndex && <Th className="font-bold">{customIndexTitle}</Th>}
+            {isShowIndex && <Th className="font-bold ">{customIndexTitle}</Th>}
 
             {headers.map((header, index) => {
               return (
-                <Th key={index} className=" font-bold">
+                <Th
+                  key={index}
+                  className=" font-bold"
+                  style={{ width: header?.width || "auto" }}
+                >
                   {header.title}
                 </Th>
               );
@@ -409,23 +444,39 @@ const normalTable = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data?.map((row, index) => {
-            return (
-              <Tr key={index}>
-                {isShowIndex && <Td className="font-bold">{index + 1}</Td>}
+          {!isLoading &&
+            data?.map((row, index) => {
+              return (
+                <Tr key={index} height="10px">
+                  {isShowIndex && <Td className="font-bold">{index + 1}</Td>}
 
-                {headers?.map((header, index) => {
-                  return (
-                    <Td key={index}>
-                      {header?.render ? header.render(row) : row[header.key]}
-                    </Td>
-                  );
-                })}
-              </Tr>
-            );
-          })}
+                  {headers?.map((header, index) => {
+                    return (
+                      <Td
+                        key={index}
+                        style={{
+                          width: header?.width || "auto",
+                        }}
+                        className=" whitespace-normal"
+                      >
+                        <Box
+                          maxH={"100px"}
+                          className=" line-clamp-3 flex flex-row items-center"
+                        >
+                          {header?.render
+                            ? header.render(row)
+                            : row[header.key]}
+                        </Box>
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
         </Tbody>
       </Table>
+
+      {isLoading && <LoadingTableSkeleton />}
     </TableContainer>
   );
 };

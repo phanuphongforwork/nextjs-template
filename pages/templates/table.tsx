@@ -1,19 +1,22 @@
 import { FullLayout } from "@/components/layouts/FullLayout.component";
-import { CustomTable } from "@/components/tables/Table.component";
 import { BreadcrumbType } from "@/components/CustomBreadcrumb.component";
 import { FilterItemType } from "@/components/tables/Table.component";
-import { Badge } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 import { TestState } from "@/components/dashboards/TestState";
 
 import { FilterType } from "@/constants/filter.constant";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { useParams } from "@/hooks/useParam.hook";
 import { ResponsiveTable } from "@/components/tables/ResponsiveTable.component";
 import { DataAction } from "@/components/DataAction.component";
 import { MdSupervisedUserCircle } from "react-icons/md";
+import { withAuth } from "@/hocs/withAuth";
+import { AlertDialog } from "@/components/dialogs/AlertDialog.component";
+import { useErrorHandler } from "@/hooks/useErrorHandler.hook";
+import { customApi } from "@/services/testService";
 
-export default function TablePage() {
+function TablePage() {
   const metaTag = {
     title: "Template Table",
   };
@@ -33,7 +36,11 @@ export default function TablePage() {
     setFilters,
     setDefaultFilters,
     setPage,
-    ...param
+    page,
+    perPage,
+    filters,
+    q,
+    includes,
   } = useParams();
 
   const defaultFilters: Record<string, any> = {
@@ -58,13 +65,16 @@ export default function TablePage() {
             id: "wave" + i,
             name: "wave" + i,
             phone: "0123456789",
+            test1: "wave" + i,
+            test2: "wave" + i,
+            test3: "wave" + i,
           },
         ];
       });
     }
 
     setDefaultFilters(defaultFilters);
-    setPage(5);
+    setPage(2);
   }, []);
 
   const filterItems: FilterItemType = [
@@ -111,6 +121,7 @@ export default function TablePage() {
       date: {
         selectValue: defaultFilters.date_select,
         onSelect: (select: string) => {
+          console.log(select);
           setFilters("date_select", select);
         },
       },
@@ -129,13 +140,40 @@ export default function TablePage() {
     },
   ];
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef();
+
+  const {
+    data: test,
+    error,
+    reload,
+    isLoading,
+  } = useErrorHandler<{
+    name: string;
+    order: number;
+  }>(
+    () => customApi.customFunction(),
+    [
+      q,
+      page,
+      filters.select_option_1,
+      filters.select_option_2,
+      filters.date_select,
+      filters.check_box,
+    ]
+  );
+
   return (
     <>
       <FullLayout metaTag={metaTag} breadcrumbs={breadcrumbs} header={header}>
         <div className="w-full">
           <ResponsiveTable
+            onSearch={(value: string) => {
+              setQ(value);
+            }}
             title="Responsive Table"
             subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit."
+            isLoading={isLoading}
             filterItems={filterItems}
             isShowIndex={false}
             customIndexTitle={"Number"}
@@ -153,6 +191,8 @@ export default function TablePage() {
               {
                 title: "Actions",
                 key: "actions",
+                width: "170px",
+
                 render: () => {
                   return (
                     <DataAction
@@ -178,32 +218,9 @@ export default function TablePage() {
                           ],
                         },
                       ]}
-                      // customViewLists={[
-                      //   {
-                      //     isShow: true,
-                      //     name: "wave",
-                      //     icon: MdSupervisedUserCircle,
-                      //   },
-                      // ]}
-                      // customDeleteLists={[
-                      //   {
-                      //     isShow: true,
-                      //     name: "wave",
-                      //     icon: MdSupervisedUserCircle,
-                      //   },
-                      // ]}
-                      // customEditLists={[
-                      //   {
-                      //     isShow: true,
-                      //     name: "wave",
-                      //     icon: MdSupervisedUserCircle,
-                      //   },
-                      //   {
-                      //     isShow: true,
-                      //     name: "wave",
-                      //     icon: MdSupervisedUserCircle,
-                      //   },
-                      // ]}
+                      onDeleteClick={() => {
+                        onOpen();
+                      }}
                     />
                   );
                 },
@@ -224,17 +241,43 @@ export default function TablePage() {
                 title: "Phone",
                 key: "phone",
               },
+              {
+                title: "Test1",
+                key: "test1",
+              },
+              {
+                title: "Test2",
+                key: "test2",
+              },
+              {
+                title: "Test3",
+                key: "test3",
+              },
             ]}
             pagination={{
               total: data.length,
-              perPage: 10,
+              perPage: perPage,
+              currentPage: page,
               onChange: (page: number) => {
                 setPage(page);
               },
             }}
+          />
+
+          <AlertDialog
+            title="ยืนยันการลบ"
+            message="  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Asperiores consequuntur aliquid error architecto libero et cum fugit ullam optio repellat labore officiis dolorum doloremque at maxime debitis, excepturi quos ut."
+            isOpen={isOpen}
+            onClose={() => {
+              onClose();
+            }}
+            onConfirm={() => {}}
+            cancelRef={cancelRef}
           />
         </div>
       </FullLayout>
     </>
   );
 }
+
+export default withAuth(TablePage);

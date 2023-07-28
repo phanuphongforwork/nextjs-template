@@ -13,15 +13,22 @@ export const useErrorHandler = <T>(
     };
     showErrorToast?: boolean;
   }
-): { data: T | null; error: ErrorType; reload: () => void } => {
+): {
+  data: T | null;
+  error: ErrorType;
+  reload: () => void;
+  isLoading: boolean;
+} => {
   const toast = useToast();
 
   const keys = refreshKey ? refreshKey : [];
   const [result, setResult] = useState<T | null>(null);
   const [error, setError] = useState<ErrorType>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchData = async () => {
     try {
+      setIsLoading(true);
       const data = await api();
       setResult(data);
 
@@ -36,6 +43,8 @@ export const useErrorHandler = <T>(
         toast.showErrorToast("เกิดข้อผิดพลาด", error?.message || "");
       }
       setError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,5 +60,6 @@ export const useErrorHandler = <T>(
     data: result,
     error,
     reload,
+    isLoading,
   };
 };
