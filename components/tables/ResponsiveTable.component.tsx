@@ -27,12 +27,15 @@ import { DatetimePicker } from "../date-time-pickers/DatetimePicker.component";
 import React, { useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { LoadingTableSkeleton } from "../skeletons/LoadingTableSkeleton.component";
+import debounce from "lodash/debounce";
+import classNames from "classnames";
 
 type Header = {
   key: string;
   title: string;
   render?: Function;
   width?: string;
+  align?: "left" | "center" | "right";
 };
 
 export type SelectOptionType = { value: string; label: string };
@@ -173,7 +176,9 @@ export const ResponsiveTable = ({
               <SearchBar
                 onSearch={(search: string) => {
                   if (onSearch) {
-                    onSearch(search);
+                    debounce(() => {
+                      onSearch(search);
+                    }, 500)();
                   }
                 }}
               />
@@ -434,10 +439,17 @@ const normalTable = ({
               return (
                 <Th
                   key={index}
-                  className=" font-bold"
+                  className="font-bold"
                   style={{ width: header?.width || "auto" }}
                 >
-                  {header.title}
+                  <Box
+                    className={classNames(
+                      "w-full flex",
+                      `justify-${header?.align || "left"}`
+                    )}
+                  >
+                    {header.title}
+                  </Box>
                 </Th>
               );
             })}
@@ -457,11 +469,14 @@ const normalTable = ({
                         style={{
                           width: header?.width || "auto",
                         }}
-                        className=" whitespace-normal"
+                        className="whitespace-normal"
                       >
                         <Box
                           maxH={"100px"}
-                          className=" line-clamp-3 flex flex-row items-center"
+                          className={classNames(
+                            "line-clamp-3 flex flex-row items-center",
+                            `justify-${header?.align || "left"}`
+                          )}
                         >
                           {header?.render
                             ? header.render(row)

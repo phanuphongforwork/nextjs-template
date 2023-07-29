@@ -15,6 +15,7 @@ import { withAuth } from "@/hocs/withAuth";
 import { AlertDialog } from "@/components/dialogs/AlertDialog.component";
 import { useErrorHandler } from "@/hooks/useErrorHandler.hook";
 import { customApi } from "@/services/testService";
+import { TagCopy } from "@/components/tags/TagCopy.component";
 
 function TablePage() {
   const metaTag = {
@@ -192,6 +193,7 @@ function TablePage() {
                 title: "Actions",
                 key: "actions",
                 width: "170px",
+                align: "center",
 
                 render: () => {
                   return (
@@ -228,6 +230,10 @@ function TablePage() {
               {
                 title: "ID",
                 key: "id",
+                align: "center",
+                render: (data: any) => {
+                  return <TagCopy title={data.id} />;
+                },
               },
               {
                 title: "Name",

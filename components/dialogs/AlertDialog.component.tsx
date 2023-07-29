@@ -29,7 +29,7 @@ export const AlertDialog = ({
   onConfirm,
   cancelRef,
   isOpen,
-  isCentered,
+  isCentered = true,
   title,
   message,
   cancelText = "ยกเลิก",
