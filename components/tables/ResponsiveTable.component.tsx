@@ -142,7 +142,7 @@ export const ResponsiveTable = ({
   return (
     <Box w={"full"}>
       <Box
-        className="w-full py-4 flex flex-col md:flex-row gap-4 justify-between px-4 bg-white mt-4"
+        className="w-full py-4 flex flex-col md:flex-row gap-4 justify-between px-4 bg-white mt-4 shadow-sm"
         rounded={"lg"}
       >
         <Box className="flex flex-col w-full">
@@ -272,7 +272,7 @@ export const ResponsiveTable = ({
           <Box className="w-full">{underFilterSection}</Box>
         </Box>
       </Box>
-      <Box w="full">
+      <Box w="full" mt={4}>
         {isVerticalTable &&
           verticalTable({
             data,
@@ -285,17 +285,20 @@ export const ResponsiveTable = ({
             isLoading,
           })}
       </Box>
-      {!isVerticalTable &&
-        normalTable({
-          data,
-          headers,
-          isShowIndex,
-          customIndexTitle,
-          variant,
-          colorSchema,
-          size,
-          isLoading,
-        })}
+      <Box w="full" mt={4}>
+        {!isVerticalTable &&
+          normalTable({
+            data,
+            headers,
+            isShowIndex,
+            customIndexTitle,
+            variant,
+            colorSchema,
+            size,
+            isLoading,
+          })}
+      </Box>
+
       {!data?.length && (
         <Box w={"full"} pb={8}>
           <Alert

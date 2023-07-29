@@ -16,6 +16,8 @@ import { AlertDialog } from "@/components/dialogs/AlertDialog.component";
 import { useErrorHandler } from "@/hooks/useErrorHandler.hook";
 import { customApi } from "@/services/testService";
 import { TagCopy } from "@/components/tags/TagCopy.component";
+import { Modal } from "@/components/modals/Modal.component";
+import { MyForm } from "@/components/forms/test/Form.component";
 
 function TablePage() {
   const metaTag = {
@@ -164,6 +166,12 @@ function TablePage() {
     ]
   );
 
+  const {
+    isOpen: isOpenModal,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
+
   return (
     <>
       <FullLayout metaTag={metaTag} breadcrumbs={breadcrumbs} header={header}>
@@ -184,7 +192,7 @@ function TablePage() {
               title: "Custom Create",
               colorSchema: "teal",
               onCreateClick: () => {
-                alert("create");
+                onOpenModal();
               },
             }}
             data={data}
@@ -270,6 +278,29 @@ function TablePage() {
             }}
           />
 
+          <Modal
+            title="Create Modal"
+            isOpen={isOpenModal}
+            size="lg"
+            confirmButtonId="hook-form"
+            confirmButtonType="submit"
+            onClose={() => {
+              onCloseModal();
+            }}
+            onConfirm={() => {
+              onCloseModal();
+            }}
+          >
+            <div>
+              <MyForm
+                onSuccess={(data: "wave") => {
+                  console.log("onSuccess", data);
+                  onCloseModal();
+                }}
+              />
+            </div>
+          </Modal>
+
           <AlertDialog
             title="ยืนยันการลบ"
             message="  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Asperiores consequuntur aliquid error architecto libero et cum fugit ullam optio repellat labore officiis dolorum doloremque at maxime debitis, excepturi quos ut."
@@ -277,7 +308,9 @@ function TablePage() {
             onClose={() => {
               onClose();
             }}
-            onConfirm={() => {}}
+            onConfirm={() => {
+              onClose();
+            }}
             cancelRef={cancelRef}
           />
         </div>
