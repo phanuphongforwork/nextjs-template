@@ -15,6 +15,7 @@ export type MenuListType = {
   icon: IconType;
   url: string;
   subMenu?: MenuListType[];
+  active?: boolean;
 };
 
 export const menuConfig: MenuListType[] = [
@@ -26,6 +27,7 @@ export const menuConfig: MenuListType[] = [
   {
     name: "Pages",
     icon: MdOutlineDynamicFeed,
+    active: true,
     url: "/pages",
     subMenu: [
       {
@@ -43,6 +45,7 @@ export const menuConfig: MenuListType[] = [
   {
     name: "Templates",
     icon: MdOutlineBackupTable,
+    active: true,
     url: "/templates",
     subMenu: [
       {

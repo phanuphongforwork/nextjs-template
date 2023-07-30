@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { PageCard } from "../PageCard.component";
 import { Meta } from "@/components/Meta.component";
 import { IMetaTag } from "@/components/Meta.component";
@@ -30,6 +30,7 @@ import {
   MenuList,
 } from "@chakra-ui/react";
 import { FiMenu, FiBell, FiChevronDown } from "react-icons/fi";
+import { MdArrowDropDown, MdArrowRight } from "react-icons/md";
 import { IconType } from "react-icons";
 import {
   CustomBreadcrumb,
@@ -103,6 +104,39 @@ interface SidebarProps extends BoxProps {
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   const menuList = menuConfig;
+
+  const [openSubMenus, setOpenSubMenus] = useState<number[]>([]);
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    const openSubMenusIndexes: number[] = [];
+
+    menuList.forEach((menu, index) => {
+      if (menu?.active) {
+        openSubMenusIndexes.push(index);
+      }
+    });
+
+    menuList.forEach((menu, index) => {
+      if (menu?.subMenu) {
+        menu.subMenu.forEach((subMenu) => {
+          if (subMenu?.url === path) {
+            openSubMenusIndexes.push(index);
+          }
+        });
+      }
+    });
+
+    setOpenSubMenus(openSubMenusIndexes);
+  }, [menuList]);
+
+  const handleSubMenuToggle = (index: number) => {
+    if (openSubMenus.includes(index)) {
+      setOpenSubMenus((prevState) => prevState.filter((i) => i !== index));
+    } else {
+      setOpenSubMenus((prevState) => [...prevState, index]);
+    }
+  };
   return (
     <Box
       transition="3s ease"
@@ -119,9 +153,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <Logo />
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
-      <Box className=" flex flex-col gap-1">
-        {menuList.map((link) => {
+      <Box className="flex flex-col gap-1">
+        {menuList.map((link, index) => {
           if (link?.subMenu && link?.subMenu?.length > 0) {
+            const isSubMenuOpen = openSubMenus.includes(index); // Check if the submenu is open
+
             return (
               <div key={link.name}>
                 <NavItem
@@ -129,19 +165,35 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                   icon={link.icon}
                   href={link.url}
                   disabled={true}
+                  onClick={() => handleSubMenuToggle(index)} // Add onClick to toggle the submenu
                 >
-                  {link.name}
+                  <Box className="flex justify-between w-full">
+                    <Box>{link.name}</Box>
+                    <Box>
+                      <Icon
+                        as={MdArrowRight}
+                        boxSize={6}
+                        transform={isSubMenuOpen ? "rotate(90deg)" : ""}
+                      />
+                    </Box>
+                  </Box>
                 </NavItem>
 
-                <div className="flex flex-col gap-1 pl-8">
-                  {link.subMenu.map((menu) => {
-                    return (
-                      <NavItem key={menu.name} icon={menu.icon} href={menu.url}>
-                        {menu.name}
-                      </NavItem>
-                    );
-                  })}
-                </div>
+                {isSubMenuOpen && (
+                  <div className="flex flex-col gap-1 pl-8">
+                    {link.subMenu.map((menu) => {
+                      return (
+                        <NavItem
+                          key={menu.name}
+                          icon={menu.icon}
+                          href={menu.url}
+                        >
+                          {menu.name}
+                        </NavItem>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           } else {
@@ -177,11 +229,12 @@ const NavItem = ({
     return (
       <Flex
         align="center"
-        p="4"
+        p="2"
         mx="2"
         borderRadius="lg"
         role="group"
-        cursor={disabled ? "default" : "pointer"}
+        // cursor={disabled ? "default" : "pointer"}
+        cursor={"pointer"}
         _hover={{
           bg: `${disabled ? "" : "gray.200"}`,
         }}
@@ -206,7 +259,7 @@ const NavItem = ({
     <Link href={href} style={{ textDecoration: "none" }}>
       <Flex
         align="center"
-        p="4"
+        p="2"
         mx="2"
         borderRadius="lg"
         role="group"

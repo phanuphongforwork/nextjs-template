@@ -17,6 +17,7 @@ import {
   AlertDescription,
   Text,
   Checkbox,
+  IconButton,
 } from "@chakra-ui/react";
 import { MdAddCircleOutline, MdRefresh } from "react-icons/md";
 import { Pagination } from "../Pagination.component";
@@ -151,23 +152,32 @@ export const ResponsiveTable = ({
               {title && <HeaderAndSubTitle title={title} subtitle={subtitle} />}
             </Box>
 
-            <Box className="w-full md:w-auto" mt={{ base: 4, md: 0 }}>
-              {createSection?.show && (
-                <Button
-                  className="w-full"
-                  colorScheme={createSection?.colorSchema ?? "teal"}
-                  leftIcon={
-                    <Icon as={createSection?.icon ?? MdAddCircleOutline} />
-                  }
-                  onClick={() => {
-                    if (createSection?.onCreateClick) {
-                      createSection?.onCreateClick();
+            <Box className=" flex gap-2 items-center">
+              {/* <Box mt={{ base: 4, md: 0 }}>
+                <IconButton
+                  variant="outline"
+                  aria-label="open menu"
+                  icon={<MdRefresh />}
+                />
+              </Box> */}
+              <Box className="w-full md:w-auto" mt={{ base: 4, md: 0 }}>
+                {createSection?.show && (
+                  <Button
+                    className="w-full"
+                    colorScheme={createSection?.colorSchema ?? "teal"}
+                    leftIcon={
+                      <Icon as={createSection?.icon ?? MdAddCircleOutline} />
                     }
-                  }}
-                >
-                  {createSection?.title}
-                </Button>
-              )}
+                    onClick={() => {
+                      if (createSection?.onCreateClick) {
+                        createSection?.onCreateClick();
+                      }
+                    }}
+                  >
+                    {createSection?.title}
+                  </Button>
+                )}
+              </Box>
             </Box>
           </Box>
 
