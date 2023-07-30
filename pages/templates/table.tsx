@@ -281,7 +281,7 @@ function TablePage() {
           <Modal
             title="Create Modal"
             isOpen={isOpenModal}
-            size="lg"
+            size="sm"
             confirmButtonId="hook-form"
             confirmButtonType="submit"
             onClose={() => {

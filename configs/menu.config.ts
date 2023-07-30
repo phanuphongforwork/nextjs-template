@@ -6,6 +6,9 @@ import {
   MdOutlineTableChart,
   MdOutlineFlipToFront,
   MdOutlineCalendarMonth,
+  MdOutlineDynamicFeed,
+  MdOutlineSettings,
+  MdLogin,
 } from "react-icons/md";
 export type MenuListType = {
   name: string;
@@ -19,6 +22,23 @@ export const menuConfig: MenuListType[] = [
     name: "Dashboard",
     icon: MdOutlineHome,
     url: "/",
+  },
+  {
+    name: "Pages",
+    icon: MdOutlineDynamicFeed,
+    url: "/pages",
+    subMenu: [
+      {
+        name: "Login",
+        icon: MdLogin,
+        url: "/pages/login",
+      },
+      {
+        name: "Setting",
+        icon: MdOutlineSettings,
+        url: "/pages/setting",
+      },
+    ],
   },
   {
     name: "Templates",
