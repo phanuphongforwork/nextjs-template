@@ -23,6 +23,7 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
+  Tooltip,
 } from "@chakra-ui/react";
 import {
   MdAddCircleOutline,
@@ -236,11 +237,6 @@ export const ResponsiveTable = ({
 
   const handleCloseSortModal = () => {
     onClose();
-
-    reset({
-      key: defaultSortColumn ?? "",
-      direction: defaultSortDirection ?? "asc",
-    });
   };
 
   return (
@@ -298,15 +294,30 @@ export const ResponsiveTable = ({
                 />
               </Box>
               <Box mt={{ base: 4, md: 0 }} className="w-full md:w-auto">
-                <Button
-                  className="w-full"
-                  rightIcon={<Icon as={MdFilterList} />}
-                  onClick={() => {
-                    onOpen();
-                  }}
+                <Tooltip
+                  hasArrow
+                  label={`${
+                    sortKey
+                      ? `${sortKey} : ${
+                          sortDirection === "asc"
+                            ? "น้อยไปหามาก"
+                            : "มากไปหาน้อย"
+                        }`
+                      : ""
+                  }`}
+                  bg="gray.300"
+                  color="black"
                 >
-                  เรียงลำดับ
-                </Button>
+                  <Button
+                    className="w-full"
+                    rightIcon={<Icon as={MdFilterList} />}
+                    onClick={() => {
+                      onOpen();
+                    }}
+                  >
+                    เรียงลำดับ
+                  </Button>
+                </Tooltip>
               </Box>
             </Box>
 
@@ -476,7 +487,7 @@ export const ResponsiveTable = ({
         title="เรียงลำดับข้อมูล"
         isOpen={isOpen}
         onClose={() => {
-          handleCloseSortModal();
+          onClose();
         }}
         onConfirm={() => {}}
         confirmButtonId="sort-form"
@@ -556,7 +567,27 @@ const verticalTable = ({
                   {headers.map((header, index) => {
                     return (
                       <Td className="flex w-full" key={header.title + index}>
-                        <Box className="w-1/3 font-bold">{header.title}</Box>
+                        <Box className="w-1/3 font-bold flex gap-1">
+                          <Box className="flex gap-2 items-center">
+                            <Box>{header.title}</Box>
+                            {sortKey === header.key &&
+                              sortDirection === "asc" && (
+                                <Icon
+                                  as={MdArrowDropUp}
+                                  fill={"teal"}
+                                  boxSize={8}
+                                />
+                              )}
+                            {sortKey === header.key &&
+                              sortDirection === "desc" && (
+                                <Icon
+                                  as={MdArrowDropDown}
+                                  fill={"teal"}
+                                  boxSize={8}
+                                />
+                              )}
+                          </Box>
+                        </Box>
                         <Box className="w-2/3 flex flex-row items-center whitespace-normal">
                           <Box className="line-clamp-3 w-full ">
                             {header?.render

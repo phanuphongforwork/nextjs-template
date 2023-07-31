@@ -80,7 +80,7 @@ export const FullLayout = ({
         {/* mobilenav */}
         <MobileNav onOpen={onOpen} />
         <Box ml={{ base: 0, lg: 72 }} className=" ">
-          <div className="w-full p-4 md:p-8 h-screen overflow-y-scroll">
+          <div className="w-full p-2 md:p-8 h-screen overflow-y-scroll">
             <div className=" w-full md:w-auto py-4 overflow-y-scroll">
               <CustomBreadcrumb items={breadcrumbs} />
             </div>
