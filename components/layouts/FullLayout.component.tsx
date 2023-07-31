@@ -89,9 +89,9 @@ export const FullLayout = ({
               {children}
             </PageCard>
           </div>
-          <div className=" p-0 w-full">
+          {/* <div className=" p-0 w-full">
             <Footer />
-          </div>
+          </div> */}
         </Box>
       </Box>
     </>

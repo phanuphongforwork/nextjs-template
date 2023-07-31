@@ -9,6 +9,7 @@ import {
   MdOutlineDynamicFeed,
   MdOutlineSettings,
   MdLogin,
+  MdOutlineShield,
 } from "react-icons/md";
 export type MenuListType = {
   name: string;
@@ -39,6 +40,11 @@ export const menuConfig: MenuListType[] = [
         name: "Setting",
         icon: MdOutlineSettings,
         url: "/pages/setting",
+      },
+      {
+        name: "Permission",
+        icon: MdOutlineShield,
+        url: "/pages/permission",
       },
     ],
   },

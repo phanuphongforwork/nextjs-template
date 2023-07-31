@@ -89,7 +89,7 @@ function TablePage() {
     }
 
     setDefaultFilters(defaultFilters);
-    setPage(2);
+    setPage(1);
   }, []);
 
   const filterItems: FilterItemType = [
