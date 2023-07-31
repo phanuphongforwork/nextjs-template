@@ -1,6 +1,12 @@
 import React, { ReactNode } from "react";
 import { Box } from "@chakra-ui/react";
-import { useColorModeValue, Heading, Text, Divider } from "@chakra-ui/react";
+import {
+  useColorModeValue,
+  Heading,
+  Text,
+  Divider,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 
 type IProps = {
   title?: string;
@@ -9,6 +15,7 @@ type IProps = {
 };
 
 export const PageCard = ({ children, subtitle = "", title = "" }: IProps) => {
+  const containerWidth = useBreakpointValue({ base: "100%", md: "70%" });
   return (
     <>
       <Box
@@ -24,7 +31,9 @@ export const PageCard = ({ children, subtitle = "", title = "" }: IProps) => {
             <Heading>{title}</Heading>
           </Box>
         )}
-        {subtitle && subtitle !== "" && <Text>{subtitle}</Text>}
+        <Box className={`max-w-[${containerWidth}]`}>
+          {subtitle && subtitle !== "" && <Text>{subtitle}</Text>}
+        </Box>
         {(title || subtitle) && <Divider mt={4} />}
         <Box w="full" mt={4}>
           {children}

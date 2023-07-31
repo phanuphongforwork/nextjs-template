@@ -468,7 +468,7 @@ export const ResponsiveTable = ({
           </Alert>
         </Box>
       )}
-      <Box mt={2}>
+      <Box mt={2} className="fixed md:static bottom-0 w-full right-0">
         <Pagination
           totalCount={total}
           pageSize={perPage}

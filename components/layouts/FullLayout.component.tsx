@@ -71,7 +71,7 @@ export const FullLayout = ({
           onClose={onClose}
           returnFocusOnClose={false}
           onOverlayClick={onClose}
-          size={{ base: "full", md: "xs" }}
+          size={{ base: "lg", md: "xs" }}
         >
           <DrawerContent>
             <SidebarContent onClose={onClose} />
@@ -144,7 +144,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       bg={useColorModeValue("white", "gray.900")}
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
-      w={{ base: "full", lg: 72 }}
+      w={{ base: "sm", lg: 72 }}
       pos="fixed"
       h="full"
       {...rest}
