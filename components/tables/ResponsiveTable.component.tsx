@@ -29,6 +29,7 @@ import {
   MdRefresh,
   MdFilterList,
   MdArrowDropUp,
+  MdArrowDropDown,
 } from "react-icons/md";
 import { Pagination } from "../Pagination.component";
 import { SearchBar } from "../searchs/Search.component";
@@ -63,6 +64,32 @@ type Header = {
   width?: string;
   align?: "left" | "center" | "right";
   isSort?: boolean;
+};
+
+type VerticalTableType = {
+  data: any[];
+  headers: Header[];
+  isShowIndex: boolean;
+  customIndexTitle: string;
+  variant: string;
+  colorSchema: string;
+  size: string;
+  isLoading?: boolean;
+  sortKey?: string;
+  sortDirection?: "asc" | "desc";
+};
+
+type NormalTableType = {
+  data: any[];
+  headers: Header[];
+  isShowIndex: boolean;
+  customIndexTitle: string;
+  variant: string;
+  colorSchema: string;
+  size: string;
+  isLoading?: boolean;
+  sortKey?: string;
+  sortDirection?: "asc" | "desc";
 };
 
 export type SelectOptionType = { value: string; label: string };
@@ -184,6 +211,11 @@ export const ResponsiveTable = ({
       schema,
     });
 
+  const [sortKey, setSortKey] = useState<string>(defaultSortColumn ?? "");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">(
+    defaultSortDirection ?? "asc"
+  );
+
   const sortColumns = useMemo(() => {
     return headers?.filter((header) => {
       return header?.isSort;
@@ -194,6 +226,8 @@ export const ResponsiveTable = ({
 
   const onSubmit = async (data: SortFormValue): Promise<void> => {
     if (onSort) {
+      setSortKey(data.key);
+      setSortDirection(data.direction);
       onSort(data);
     }
 
@@ -381,6 +415,8 @@ export const ResponsiveTable = ({
             colorSchema,
             size,
             isLoading,
+            sortKey,
+            sortDirection,
           })}
       </Box>
       <Box w="full" mt={4}>
@@ -394,6 +430,8 @@ export const ResponsiveTable = ({
             colorSchema,
             size,
             isLoading,
+            sortKey,
+            sortDirection,
           })}
       </Box>
 
@@ -466,10 +504,7 @@ export const ResponsiveTable = ({
             <Box>
               <FormControl isInvalid={!!errors.direction?.message}>
                 <FormLabel>การเรียงลำดับ</FormLabel>
-                <Select
-                  placeholder="เลือกการเรียงลำดับข้อมูล"
-                  {...register("direction")}
-                >
+                <Select {...register("direction")}>
                   <option value="asc"> น้อยไปหามาก</option>
                   <option value="desc"> มากไปหาน้อย</option>
                 </Select>
@@ -495,16 +530,9 @@ const verticalTable = ({
   colorSchema,
   size,
   isLoading,
-}: {
-  data: any[];
-  headers: Header[];
-  isShowIndex: boolean;
-  customIndexTitle: string;
-  variant: string;
-  colorSchema: string;
-  size: string;
-  isLoading?: boolean;
-}) => {
+  sortKey,
+  sortDirection,
+}: VerticalTableType) => {
   return (
     <TableContainer
       bg={"white"}
@@ -558,16 +586,9 @@ const normalTable = ({
   colorSchema,
   size,
   isLoading,
-}: {
-  data: any[];
-  headers: Header[];
-  isShowIndex: boolean;
-  customIndexTitle: string;
-  variant: string;
-  colorSchema: string;
-  size: string;
-  isLoading?: boolean;
-}) => {
+  sortKey,
+  sortDirection,
+}: NormalTableType) => {
   return (
     <TableContainer
       bg={"white"}
@@ -586,7 +607,6 @@ const normalTable = ({
             {isShowIndex && <Th className="font-bold ">{customIndexTitle}</Th>}
 
             {headers.map((header, index) => {
-              const isSortable = Boolean(header.key && header.key !== "");
               return (
                 <Th
                   key={index}
@@ -599,7 +619,15 @@ const normalTable = ({
                       `justify-${header?.align || "left"}`
                     )}
                   >
-                    <Box>{header.title}</Box>
+                    <Box className="flex gap-2 items-center">
+                      <Box>{header.title}</Box>
+                      {sortKey === header.key && sortDirection === "asc" && (
+                        <Icon as={MdArrowDropUp} fill={"teal"} boxSize={8} />
+                      )}
+                      {sortKey === header.key && sortDirection === "desc" && (
+                        <Icon as={MdArrowDropDown} fill={"teal"} boxSize={8} />
+                      )}
+                    </Box>
                   </Box>
                 </Th>
               );

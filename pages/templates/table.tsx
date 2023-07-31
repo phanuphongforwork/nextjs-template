@@ -200,6 +200,16 @@ function TablePage() {
             underFilterSection={<TestState />}
             defaultSortColumn={defaultSortParam.key}
             defaultSortDirection={defaultSortParam.direction}
+            onSort={({
+              key,
+              direction,
+            }: {
+              key: string;
+              direction: "asc" | "desc";
+            }) => {
+              setSortKeyParam(key);
+              setSortDirectionParam(direction);
+            }}
             createSection={{
               show: true,
               title: "Custom Create",

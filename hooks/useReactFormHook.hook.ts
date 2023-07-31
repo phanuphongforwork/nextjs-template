@@ -18,6 +18,9 @@ type UseFormWithNextReturn<T extends FieldValues> = {
   watch: UseFormReturn<T>["watch"];
   resetField: UseFormReturn<T>["resetField"];
   setError: UseFormReturn<T>["setError"];
+  clearErrors: UseFormReturn<T>["clearErrors"];
+  getValues: UseFormReturn<T>["getValues"];
+  trigger: UseFormReturn<T>["trigger"];
 };
 
 type FormType = {
@@ -37,6 +40,9 @@ export const useReactFormHook = <T extends FieldValues>({
     watch,
     resetField,
     setError,
+    clearErrors,
+    getValues,
+    trigger,
   } = useForm<T>({
     defaultValues: defaultValues,
     resolver: yupResolver(schema),
@@ -52,5 +58,8 @@ export const useReactFormHook = <T extends FieldValues>({
     watch,
     resetField,
     setError,
+    clearErrors,
+    getValues,
+    trigger,
   };
 };
