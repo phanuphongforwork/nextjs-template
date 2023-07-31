@@ -39,11 +39,15 @@ function TablePage() {
     setFilters,
     setDefaultFilters,
     setPage,
+    setSortDirectionParam,
+    setSortKeyParam,
     page,
     perPage,
     filters,
     q,
     includes,
+    orderDir,
+    orderCol,
   } = useParams();
 
   const defaultFilters: Record<string, any> = {
@@ -53,10 +57,18 @@ function TablePage() {
     check_box: true,
   };
 
+  const defaultSortParam: { key: string; direction: "asc" | "desc" } = {
+    key: "id",
+    direction: "desc",
+  };
+
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
     setIncludes(["wave", "Phanupjong"]);
+
+    setSortKeyParam(defaultSortParam.key);
+    setSortDirectionParam(defaultSortParam.direction);
 
     setData([]);
 
@@ -163,6 +175,8 @@ function TablePage() {
       filters.select_option_2,
       filters.date_select,
       filters.check_box,
+      orderDir,
+      orderCol,
     ]
   );
 
@@ -184,6 +198,8 @@ function TablePage() {
             isShowIndex={false}
             customIndexTitle={"Number"}
             underFilterSection={<TestState />}
+            defaultSortColumn={defaultSortParam.key}
+            defaultSortDirection={defaultSortParam.direction}
             createSection={{
               show: true,
               title: "Custom Create",
@@ -239,6 +255,7 @@ function TablePage() {
                 title: "ID",
                 key: "id",
                 align: "center",
+                isSort: true,
                 render: (data: any) => {
                   return <TagCopy title={data.id} />;
                 },
@@ -264,6 +281,7 @@ function TablePage() {
                 key: "test2",
               },
               {
+                isSort: true,
                 title: "Test3",
                 key: "test3",
               },

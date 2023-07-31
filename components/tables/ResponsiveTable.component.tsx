@@ -15,17 +15,14 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
   useDisclosure,
   Tag,
   Text,
   Checkbox,
+  FormControl,
+  FormLabel,
+  Input,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import {
   MdAddCircleOutline,
@@ -42,7 +39,22 @@ import React, { useEffect, useState, useMemo } from "react";
 import { IconType } from "react-icons";
 import { LoadingTableSkeleton } from "../skeletons/LoadingTableSkeleton.component";
 import debounce from "lodash/debounce";
+import { Modal } from "../modals/Modal.component";
 import classNames from "classnames";
+import { useReactFormHook } from "@/hooks/useReactFormHook.hook";
+import * as yup from "yup";
+
+type SortFormValue = {
+  key: string;
+  direction: "asc" | "desc";
+};
+
+const schema = yup
+  .object({
+    key: yup.string().required(),
+    direction: yup.string().required(),
+  })
+  .required();
 
 type Header = {
   key: string;
@@ -145,6 +157,9 @@ export const ResponsiveTable = ({
   underFilterSection,
   noDataSecton,
   onSearch,
+  onSort,
+  defaultSortColumn,
+  defaultSortDirection,
 }: IResponsiveTableType) => {
   const isVerticalTable = useBreakpointValue({ base: true, lg: false });
 
@@ -160,59 +175,39 @@ export const ResponsiveTable = ({
     setPerPage(pagination?.perPage || 10);
   }, [pagination!.total]);
 
-  // const   filterValues: { key: string; value: any }[] = [];
-
-  const [filterValues, setFilterValues] = useState<
-    { key: string; value: any }[]
-  >([]);
-
-  useEffect(() => {
-    const values: { key: string; value: any }[] = [];
-    filterItems.forEach((item, index) => {
-      const switchCase: any = {
-        select: () => {
-          return {
-            key: item.field,
-            value: item?.select?.selectValue
-              ? item?.select?.selectValue
-              : undefined,
-          };
-        },
-        date: () => {
-          return {
-            key: item.field,
-            value: item?.select?.selectValue
-              ? item?.select?.selectValue
-              : undefined,
-          };
-        },
-        checkbox: () => {
-          return {
-            key: item.field,
-            value: item?.select?.selectValue
-              ? item?.select?.selectValue
-              : undefined,
-          };
-        },
-      };
-
-      if (item?.type) {
-        const val: { key: string; value: any } = switchCase[item?.type]();
-
-        console.log("val", val);
-
-        if (val?.value) {
-          values.push(val);
-        }
-      }
+  const { handleSubmit, register, formState, reset, setValue } =
+    useReactFormHook<SortFormValue>({
+      defaultValues: {
+        key: defaultSortColumn ?? "",
+        direction: defaultSortDirection ?? "asc",
+      },
+      schema,
     });
 
-    setFilterValues(values);
+  const sortColumns = useMemo(() => {
+    return headers?.filter((header) => {
+      return header?.isSort;
+    });
+  }, []);
 
-    console.log(values);
-  }, [...filterItems]);
+  const { errors } = formState;
 
-  useEffect(() => {}, []);
+  const onSubmit = async (data: SortFormValue): Promise<void> => {
+    if (onSort) {
+      onSort(data);
+    }
+
+    handleCloseSortModal();
+  };
+
+  const handleCloseSortModal = () => {
+    onClose();
+
+    reset({
+      key: defaultSortColumn ?? "",
+      direction: defaultSortDirection ?? "asc",
+    });
+  };
 
   return (
     <Box w={"full"}>
@@ -267,6 +262,17 @@ export const ResponsiveTable = ({
                     }
                   }}
                 />
+              </Box>
+              <Box mt={{ base: 4, md: 0 }} className="w-full md:w-auto">
+                <Button
+                  className="w-full"
+                  rightIcon={<Icon as={MdFilterList} />}
+                  onClick={() => {
+                    onOpen();
+                  }}
+                >
+                  เรียงลำดับ
+                </Button>
               </Box>
             </Box>
 
@@ -427,6 +433,55 @@ export const ResponsiveTable = ({
           }}
         />
       </Box>
+
+      <Modal
+        title="เรียงลำดับข้อมูล"
+        isOpen={isOpen}
+        onClose={() => {
+          handleCloseSortModal();
+        }}
+        onConfirm={() => {}}
+        confirmButtonId="sort-form"
+        confirmButtonType="submit"
+      >
+        <form id="sort-form" onSubmit={handleSubmit(onSubmit)}>
+          <Box className="grid grid-cols-1 gap-4">
+            <Box>
+              <FormControl isInvalid={!!errors.key?.message}>
+                <FormLabel>ข้อมูลที่ต้องการเรียงลำดับ</FormLabel>
+                <Select {...register("key")}>
+                  {sortColumns.map((column, index) => {
+                    return (
+                      <option key={index} value={column.key}>
+                        {column.title}
+                      </option>
+                    );
+                  })}
+                </Select>
+
+                <FormErrorMessage>{errors?.key?.message}</FormErrorMessage>
+              </FormControl>
+            </Box>
+
+            <Box>
+              <FormControl isInvalid={!!errors.direction?.message}>
+                <FormLabel>การเรียงลำดับ</FormLabel>
+                <Select
+                  placeholder="เลือกการเรียงลำดับข้อมูล"
+                  {...register("direction")}
+                >
+                  <option value="asc"> น้อยไปหามาก</option>
+                  <option value="desc"> มากไปหาน้อย</option>
+                </Select>
+
+                <FormErrorMessage>
+                  {errors?.direction?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </Box>
+          </Box>
+        </form>
+      </Modal>
     </Box>
   );
 };

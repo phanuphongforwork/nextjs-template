@@ -14,6 +14,10 @@ type UseFormWithNextReturn<T extends FieldValues> = {
   register: UseFormReturn<T>["register"];
   formState: UseFormReturn<T>["formState"];
   setValue: UseFormReturn<T>["setValue"];
+  reset: UseFormReturn<T>["reset"];
+  watch: UseFormReturn<T>["watch"];
+  resetField: UseFormReturn<T>["resetField"];
+  setError: UseFormReturn<T>["setError"];
 };
 
 type FormType = {
@@ -24,9 +28,19 @@ export const useReactFormHook = <T extends FieldValues>({
   defaultValues,
   schema,
 }: FormType): UseFormWithNextReturn<T> => {
-  const { register, handleSubmit, formState, setValue } = useForm<T>({
+  const {
+    register,
+    handleSubmit,
+    formState,
+    setValue,
+    reset,
+    watch,
+    resetField,
+    setError,
+  } = useForm<T>({
     defaultValues: defaultValues,
     resolver: yupResolver(schema),
+    mode: "onChange",
   });
 
   return {
@@ -34,5 +48,9 @@ export const useReactFormHook = <T extends FieldValues>({
     handleSubmit: (onValid) => handleSubmit(onValid),
     formState: formState,
     setValue,
+    reset,
+    watch,
+    resetField,
+    setError,
   };
 };
