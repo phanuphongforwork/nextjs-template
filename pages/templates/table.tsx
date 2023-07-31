@@ -177,9 +177,6 @@ function TablePage() {
       <FullLayout metaTag={metaTag} breadcrumbs={breadcrumbs} header={header}>
         <div className="w-full">
           <ResponsiveTable
-            onSearch={(value: string) => {
-              setQ(value);
-            }}
             title="Responsive Table"
             subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit."
             isLoading={isLoading}
@@ -194,6 +191,9 @@ function TablePage() {
               onCreateClick: () => {
                 onOpenModal();
               },
+            }}
+            onSearch={(value: string) => {
+              setQ(value);
             }}
             data={data}
             headers={[

@@ -10,15 +10,8 @@ export const useParams = () => {
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
 
-  // useEffect(() => {
-  //   console.log("test===>", {
-  //     q,
-  //     includes,
-  //     filters: filterDTO(filters),
-  //     page,
-  //     perPage,
-  //   });
-  // }, [q, includes, filters, page, perPage]);
+  const [sortKey, setSortKey] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<"desc" | "asc">("asc");
 
   const setQParam = (search: string) => {
     if (search !== undefined) {
@@ -29,6 +22,14 @@ export const useParams = () => {
       const { q: _q, ...updatedFilters } = filters;
       setFilters(updatedFilters);
     }
+  };
+
+  const setSortKeyParam = (key: string) => {
+    setSortKey(key);
+  };
+
+  const setSortDirectionParam = (direction: "desc" | "asc") => {
+    setSortDirection(direction);
   };
 
   const setIncludesParam = (includes: string[]) => {
@@ -84,11 +85,15 @@ export const useParams = () => {
     filters: filterDTO(filters),
     page,
     perPage,
+    orderDir: sortDirection,
+    orderCol: sortKey,
     setQ: setQParam,
     setIncludes: setIncludesParam,
     setFilters: setFiltersParam,
     setDefaultFilters,
     setPage,
     setPerPage,
+    setSortKeyParam,
+    setSortDirectionParam,
   };
 };

@@ -15,17 +15,30 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  useDisclosure,
+  Tag,
   Text,
   Checkbox,
-  IconButton,
 } from "@chakra-ui/react";
-import { MdAddCircleOutline, MdRefresh } from "react-icons/md";
+import {
+  MdAddCircleOutline,
+  MdRefresh,
+  MdFilterList,
+  MdArrowDropUp,
+} from "react-icons/md";
 import { Pagination } from "../Pagination.component";
 import { SearchBar } from "../searchs/Search.component";
 import { HeaderAndSubTitle } from "../displays/texts/HeaderAndSubTitle.component";
 import { FilterConstant, FilterType } from "@/constants/filter.constant";
 import { DatetimePicker } from "../date-time-pickers/DatetimePicker.component";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { IconType } from "react-icons";
 import { LoadingTableSkeleton } from "../skeletons/LoadingTableSkeleton.component";
 import debounce from "lodash/debounce";
@@ -37,6 +50,7 @@ type Header = {
   render?: Function;
   width?: string;
   align?: "left" | "center" | "right";
+  isSort?: boolean;
 };
 
 export type SelectOptionType = { value: string; label: string };
@@ -94,6 +108,9 @@ export type IResponsiveTableType = {
     currentPage?: number;
     onChange?: Function;
   };
+  defaultSortColumn?: string | null;
+  defaultSortDirection?: "asc" | "desc";
+  onSort?: Function;
 };
 
 const onSelectionChange = (
@@ -131,6 +148,8 @@ export const ResponsiveTable = ({
 }: IResponsiveTableType) => {
   const isVerticalTable = useBreakpointValue({ base: true, lg: false });
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [page, setPage] = useState<number>(1);
   const [total, setTotal] = useState<number>(0);
   const [perPage, setPerPage] = useState<number>(10);
@@ -140,6 +159,61 @@ export const ResponsiveTable = ({
     setPage(pagination?.currentPage || 1);
     setPerPage(pagination?.perPage || 10);
   }, [pagination!.total]);
+
+  // const   filterValues: { key: string; value: any }[] = [];
+
+  const [filterValues, setFilterValues] = useState<
+    { key: string; value: any }[]
+  >([]);
+
+  useEffect(() => {
+    const values: { key: string; value: any }[] = [];
+    filterItems.forEach((item, index) => {
+      const switchCase: any = {
+        select: () => {
+          return {
+            key: item.field,
+            value: item?.select?.selectValue
+              ? item?.select?.selectValue
+              : undefined,
+          };
+        },
+        date: () => {
+          return {
+            key: item.field,
+            value: item?.select?.selectValue
+              ? item?.select?.selectValue
+              : undefined,
+          };
+        },
+        checkbox: () => {
+          return {
+            key: item.field,
+            value: item?.select?.selectValue
+              ? item?.select?.selectValue
+              : undefined,
+          };
+        },
+      };
+
+      if (item?.type) {
+        const val: { key: string; value: any } = switchCase[item?.type]();
+
+        console.log("val", val);
+
+        if (val?.value) {
+          values.push(val);
+        }
+      }
+    });
+
+    setFilterValues(values);
+
+    console.log(values);
+  }, [...filterItems]);
+
+  useEffect(() => {}, []);
+
   return (
     <Box w={"full"}>
       <Box
@@ -182,20 +256,26 @@ export const ResponsiveTable = ({
           </Box>
 
           <Box w={"full"} bg={"white"} rounded={"lg"} mt={{ base: 8, md: 8 }}>
-            <Box>
-              <SearchBar
-                onSearch={(search: string) => {
-                  if (onSearch) {
-                    debounce(() => {
-                      onSearch(search);
-                    }, 500)();
-                  }
-                }}
-              />
+            <Box className="flex gap-2 flex-col md:flex-row">
+              <Box className=" w-full">
+                <SearchBar
+                  onSearch={(search: string) => {
+                    if (onSearch) {
+                      debounce(() => {
+                        onSearch(search);
+                      }, 500)();
+                    }
+                  }}
+                />
+              </Box>
             </Box>
+
             {filterItems && filterItems?.length > 0 && (
               <>
-                <Box className="w-full py-4 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5 items-center">
+                <Box
+                  mt={4}
+                  className=" grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full"
+                >
                   {filterItems.map((filter) => {
                     const type = filter?.type
                       ? filter.type
@@ -279,7 +359,9 @@ export const ResponsiveTable = ({
             )}
           </Box>
 
-          <Box className="w-full">{underFilterSection}</Box>
+          <Box mt={6} pb={2} className="w-full">
+            {underFilterSection}
+          </Box>
         </Box>
       </Box>
       <Box w="full" mt={4}>
@@ -444,11 +526,12 @@ const normalTable = ({
         size={size}
         __css={{ tableLayout: "fixed", width: "full" }}
       >
-        <Thead>
+        <Thead cursor={"pointer"}>
           <Tr>
             {isShowIndex && <Th className="font-bold ">{customIndexTitle}</Th>}
 
             {headers.map((header, index) => {
+              const isSortable = Boolean(header.key && header.key !== "");
               return (
                 <Th
                   key={index}
@@ -457,11 +540,11 @@ const normalTable = ({
                 >
                   <Box
                     className={classNames(
-                      "w-full flex",
+                      "w-full flex items-center",
                       `justify-${header?.align || "left"}`
                     )}
                   >
-                    {header.title}
+                    <Box>{header.title}</Box>
                   </Box>
                 </Th>
               );

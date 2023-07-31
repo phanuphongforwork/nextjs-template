@@ -79,7 +79,7 @@ export const FullLayout = ({
         </Drawer>
         {/* mobilenav */}
         <MobileNav onOpen={onOpen} />
-        <Box ml={{ base: 0, lg: 60 }} className=" ">
+        <Box ml={{ base: 0, lg: 72 }} className=" ">
           <div className="w-full p-4 md:p-8 h-screen overflow-y-scroll">
             <div className=" w-full md:w-auto py-4 overflow-y-scroll">
               <CustomBreadcrumb items={breadcrumbs} />
@@ -144,7 +144,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       bg={useColorModeValue("white", "gray.900")}
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
-      w={{ base: "full", lg: 60 }}
+      w={{ base: "full", lg: 72 }}
       pos="fixed"
       h="full"
       {...rest}
